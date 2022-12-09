@@ -1,7 +1,7 @@
 
 
 
-
+--cmd + O to open directory
 with visit_base_table as (
 select
        fu.ID,
