@@ -67,7 +67,7 @@ and rank_of_visit=1
 
 ,visit_summary_table as (
 select
-a.id,
+a.id as user_id,
 a.first_visit_time,
 a.REGISTRATION_TIMESTAMP_AT,
 a.first_proxy_event_time,
