@@ -237,6 +237,67 @@ from final_output_all_registered_user_level_ltv a
 
 )
 
--- ******  THIS is the re-usable history of conversion tABLE -- > push to airflow , updated everyday
---0-join feature service to this table in looker
-select * from final_output_all_registered_user_level_product_segment_LTV
+
+--select * from final_output_all_registered_user_level_product_segment_LTV
+
+,feature_homepage_exp_all_custo_variant_control as (
+select
+    f.NAME as experiment_name,
+    a.DATE_CREATED as feature_assigned_time,
+    v.USER_ID,
+    lcu.REGISTRATION_TIMESTAMP,
+    a.VARIANT as Is_Variant
+
+from  feature.FEATURES f
+left join feature.assignments a on f.id = a.feature_id
+left join feature.VISITORS v on  a.VISITOR_ID = v.ID
+
+left join RPT_MARKETING.LOOKUP_CONVERTED_USERS_MERGED as lcu on v.USER_ID = lcu.USER_ID
+where 1=1
+  and f.NAME = 'show-homev1-experiment'
+  and a.DATE_CREATED >= '2022-10-14' --feature assigned after oct 14
+  and lcu.REGISTRATION_TIMESTAMP :: date >= '2022-10-14'
+  and a.VARIANT is not null
+  and v.ID is not null
+
+)
+
+
+-- ###  STEP  4 -------- JOIN Experiment Control/Variant  to ALL REGISTER USERS
+, experiment_user_level_product_conversion_ltv as (
+select   distinct b.USER_ID
+                ,a.experiment_name
+        ,a.feature_assigned_time
+        ,a.Is_Variant
+        ,b.REGISTRATION_TIMESTAMP
+        ,b.BEST_GUESS_COUNTRY
+
+        ,b.Is_Converted_all_time
+        ,b.Is_XCCY_Converted_all_time
+        ,b.first_proxy_event_time
+
+        ,b.Proxy_Conversion_Main
+        ,b.LTV_12M
+
+
+        ,b.all_volume_since_exp
+        ,b.all_xccy_volume_since_exp
+        ,b.avg_product_segment_volume_since_exp
+        ,b.avg_product_segment_LTV_12M
+        ,b.days_to_first_proxy_event
+        ,b.Is_within_10day_proxy
+        ,b.Conversion_Product_Segment
+        ,b.Conversion_Product
+
+
+from   final_output_all_registered_user_level_product_segment_LTV b
+left join    feature_homepage_exp_all_custo_variant_control a on b.USER_ID = a.USER_ID
+
+--where b.USER_ID is not null
+
+)
+
+select * from experiment_user_level_product_conversion_ltv
+
+--## this is the query that creates the Sandbox Table
+--select * from SANDBOX_DB.SANDBOX_ALL.homepage_experiment_model_base_table
