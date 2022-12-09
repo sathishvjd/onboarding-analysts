@@ -32,24 +32,7 @@ left join reports.REPORT_ACTION_STEP as ras on ras.USER_ID = lcu.USER_ID
 where 1 = 1
     and lcu.REGISTRATION_TIMESTAMP:: date  between '2021-01-01' and dateadd(day,-10,current_date)
     --and lcu.BEST_GUESS_COUNTRY in ('AUS','CAN','USA','GBR','NZL')
-/*
- and lcu.USER_ID in (
 
-                44720690
-                ,44485214
-                ,44695805
-                ,44889104
-                ,44301963
-                ,44537066
-                ,44499731
-                ,44318171
-                ,44991479 --send segment, received, but refuned
-                ,45160801 -- balance conversion. within own account
-                ,45079950 -- converted alltime =0 but MCA/SEND SEND =1; received time, but refund
-                ,45303738 --converted=1, send = 1; send success
-)
-
- */
  group by 1,2,3,4,5,6,7,8,9,10,11,12
 
 )
@@ -259,6 +242,7 @@ where 1=1
   and lcu.REGISTRATION_TIMESTAMP :: date >= '2022-10-14'
   and a.VARIANT is not null
   and v.ID is not null
+  and lcu.BEST_GUESS_COUNTRY in ('AUS','CAN','USA','GBR','NZL')
 
 )
 
